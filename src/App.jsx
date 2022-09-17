@@ -1,12 +1,13 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AuthLayout from './layouts/AuthLayout';
-import Proyectos from './pages/Proyectos';
 import RutaProtegida from './layouts/RutaProtegida';
 import Login from './pages/Login';
 import Registrar from './pages/Registrar';
 import OlvidePassword from './pages/OlvidePassword';
 import NuevoPassword from './pages/NuevoPassword';
 import ConfirmarCuenta from './pages/ConfirmarCuenta';
+import Proyectos from './pages/Proyectos';
+import NuevoProyecto from './pages/NuevoProyecto';
 import { AuthProvider } from './context/AuthProvider'
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
         {/* Rutas privadas */}
         <Route path='/proyectos' element={<RutaProtegida />}>
           <Route index element={<Proyectos />} />
+          <Route path='crear-proyecto' element={<NuevoProyecto/>} />
         </Route>
       </Routes>
     </AuthProvider>

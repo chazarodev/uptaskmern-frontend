@@ -1,10 +1,10 @@
+import React from 'react'
 
-
-const Proyectos = () => {
+const NuevoProyecto = () => {
   return (
     <>
         <h1 className="text-4xl font-black">
-            Proyecto
+            Nuevo Proyecto
         </h1>
         <div>
             
@@ -13,4 +13,4 @@ const Proyectos = () => {
   )
 }
 
-export default Proyectos
+export default NuevoProyecto
