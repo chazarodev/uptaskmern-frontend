@@ -45,6 +45,72 @@ const ProyectosProvider = ({children}) => {
     }
 
     const submitProyecto = async proyecto => {
+
+        if (proyecto.id) {
+            await editarProyecto(proyecto)
+        } else {
+            await nuevoProyecto(proyecto)
+        }
+        
+    }
+
+    const obtenerProyecto = async id => {
+        setCargando(true)
+        try {
+            const token = localStorage.getItem('token')
+            if (!token) return
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }
+
+            const {data} = await clienteAxios(`/proyectos/${id}`, config)
+            setProyecto(data)
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setCargando(false)
+        }
+    }
+
+    const editarProyecto = async proyecto => {
+        try {
+            const token = localStorage.getItem('token')
+            if (!token) return
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }
+
+            const { data } = await clienteAxios.put(`/proyectos/${proyecto.id}`, proyecto, config)
+
+            //Sincronizar el state
+            const proyectosActualizados = proyectos.map(proyectoState => proyectoState._id === data._id ? data : proyectoState)
+            setProyectos(proyectosActualizados)
+
+            setAlerta({
+                msg: "Proyecto Actualizado",
+                error: false,
+            })
+
+            setTimeout(() => {
+                setAlerta({})
+                navigate('/proyectos')
+            }, 2300);
+
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const nuevoProyecto = async proyecto => {
         try {
             const token = localStorage.getItem('token')
             if (!token) return
@@ -68,32 +134,10 @@ const ProyectosProvider = ({children}) => {
             setTimeout(() => {
                 setAlerta({})
                 navigate('/proyectos')
-            }, 3000);
+            }, 2300);
 
         } catch (error) {
             console.log(error);
-        }
-    }
-
-    const obtenerProyecto = async id => {
-        setCargando(true)
-        try {
-            const token = localStorage.getItem('token')
-            if (!token) return
-
-            const config = {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                }
-            }
-
-            const {data} = await clienteAxios(`/proyectos/${id}`, config)
-            setProyecto(data)
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setCargando(false)
         }
     }
 
