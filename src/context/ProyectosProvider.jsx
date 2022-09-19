@@ -76,6 +76,39 @@ const ProyectosProvider = ({children}) => {
         }
     }
 
+    //Función para crear un nuevo proyecto
+    const nuevoProyecto = async proyecto => {
+        try {
+            const token = localStorage.getItem('token')
+            if (!token) return
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }
+
+            const { data } = await clienteAxios.post('/proyectos', proyecto, config)
+
+            setProyectos([...proyectos, data])
+
+            setAlerta({
+                msg: "Proyecto creado correctamente",
+                error: false,
+            })
+
+            setTimeout(() => {
+                setAlerta({})
+                navigate('/proyectos')
+            }, 2300);
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    //Función para editar un proyecto
     const editarProyecto = async proyecto => {
         try {
             const token = localStorage.getItem('token')
@@ -110,7 +143,8 @@ const ProyectosProvider = ({children}) => {
         }
     }
 
-    const nuevoProyecto = async proyecto => {
+    //Función para eliminar un proyecto
+    const eliminarProyecto = async id => {
         try {
             const token = localStorage.getItem('token')
             if (!token) return
@@ -122,12 +156,14 @@ const ProyectosProvider = ({children}) => {
                 }
             }
 
-            const { data } = await clienteAxios.post('/proyectos', proyecto, config)
+            const { data } = await clienteAxios.delete(`/proyectos/${id}`, config)
 
-            setProyectos([...proyectos, data])
+            //Sincronizar el state
+            const proyectosActualizados = proyectos.filter(proyectoState => proyectoState._id !== id)
+            setProyectos(proyectosActualizados)
 
             setAlerta({
-                msg: "Proyecto creado correctamente",
+                msg: data.msg,
                 error: false,
             })
 
@@ -135,11 +171,12 @@ const ProyectosProvider = ({children}) => {
                 setAlerta({})
                 navigate('/proyectos')
             }, 2300);
-
+            
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }
+
 
     return (
         <ProyectosContext.Provider
@@ -151,6 +188,7 @@ const ProyectosProvider = ({children}) => {
                 obtenerProyecto,
                 proyecto,
                 cargando,
+                eliminarProyecto,
             }}
         >
             {children}
