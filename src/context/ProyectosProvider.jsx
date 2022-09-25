@@ -11,6 +11,7 @@ const ProyectosProvider = ({children}) => {
     const [alerta, setAlerta] = useState({})
     const [cargando, setCargando] = useState(false)
     const [modalFormularioTarea, setModalFormularioTarea] = useState(false)
+    const [tarea, setTarea] = useState({})
 
     const navigate = useNavigate()
 
@@ -180,9 +181,19 @@ const ProyectosProvider = ({children}) => {
 
     const handleModalTarea = () => {
         setModalFormularioTarea(!modalFormularioTarea)
+        setTarea({})
     }
 
     const submitTarea = async tarea => {
+
+        if (tarea?.id){
+            await editarTarea(tarea)
+        } else {
+            await crearTarea()
+        }
+    }
+
+    const crearTarea = async tarea => {
         try {
             const token = localStorage.getItem('token')
             if (!token) return
@@ -208,6 +219,36 @@ const ProyectosProvider = ({children}) => {
         }
     }
 
+    const editarTarea = async tarea => {
+        try {
+            const token = localStorage.getItem('token')
+            if (!token) return
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }
+
+            const {data} = await clienteAxios.put(`/tareas/${tarea.id}`, tarea, config)
+
+            const proyectoActualizado = {...proyecto}
+            proyectoActualizado.tareas = proyectoActualizado.tareas.map(tareaState => tareaState._id === data._id ? data : tareaState)
+            setProyecto(proyectoActualizado)
+            setAlerta({})
+            setModalFormularioTarea(false)
+            
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const handleModalEditarTarea = tarea => {
+        setTarea(tarea)
+        setModalFormularioTarea(true)
+    }
+
     return (
         <ProyectosContext.Provider
             value={{
@@ -221,7 +262,9 @@ const ProyectosProvider = ({children}) => {
                 eliminarProyecto,
                 modalFormularioTarea,
                 handleModalTarea,
-                submitTarea
+                submitTarea,
+                handleModalEditarTarea,
+                tarea
             }}
         >
             {children}
