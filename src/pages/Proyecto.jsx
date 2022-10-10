@@ -8,17 +8,61 @@ import ModalFormularioTarea from "../components/ModalFormularioTarea"
 import ModalEliminarTarea from "../components/ModalEliminarTarea"
 import ModalEliminarColaborador from "../components/ModalEliminarColaborador"
 import Colaborador from "../components/Colaborador"
+import { io } from "socket.io-client"
+
+let socket
 
 const Proyecto = () => {
 
     const params = useParams()
-    const { obtenerProyecto, proyecto, cargando, handleModalTarea, alerta } = useProyectos()
+    const { obtenerProyecto, proyecto, cargando, handleModalTarea, alerta, submitTareasProyecto, submitEliminarTareaProyecto, submitActualizarTareaProyecto, submitEstadoTarea } = useProyectos()
 
     const admin = useAdmin()
 
     useEffect(() => {
       obtenerProyecto(params.id)
     }, [])
+
+    //Conectar a socket.io para acceder a un room del proyecto
+    useEffect(() => {
+        socket = io(import.meta.env.VITE_BACKEND_URL)
+        socket.emit('abrir proyecto', params.id)
+    }, [])
+
+    //UseEffec que escuchará a cada momento sockey.io
+    useEffect(() => {
+
+        socket.on('tarea agregada', tareaNueva => {
+            if (tareaNueva.proyecto === proyecto._id) {
+                submitTareasProyecto(tareaNueva) //Mandar al provider los datos de la nueva tarea
+            }
+        })
+
+        socket.on('tarea eliminada', tareaEliminada => {
+            if (tareaEliminada.proyecto === proyecto._id) {
+                submitEliminarTareaProyecto(tareaEliminada)
+            }
+        })
+
+        socket.on('tarea actualizada', tareaActualizada => {
+            if (tareaActualizada.proyecto._id === proyecto._id) {
+                submitActualizarTareaProyecto(tareaActualizada)
+            }
+        })
+
+        socket.on('nuevo estado', nuevoEstadoTarea => {
+            if (nuevoEstadoTarea.proyecto._id === proyecto._id) {
+                submitEstadoTarea(nuevoEstadoTarea)
+            }
+        })
+    })
+
+    //Escuando todo el tiempo socket.io
+    // useEffect(() => {
+    //     socket.on('respuesta', (persona) => {
+    //         console.log(persona);
+    //     })
+    // })
 
     const { nombre } = proyecto
 
