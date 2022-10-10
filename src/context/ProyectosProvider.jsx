@@ -76,10 +76,14 @@ const ProyectosProvider = ({children}) => {
             setProyecto(data)
             setAlerta({})
         } catch (error) {
+            navigate('/proyectos')
             setAlerta({
                 msg: error.response.data.msg,
                 error: true,
             })
+            setTimeout(() => {
+                setAlerta({})
+            }, 2300);
         } finally {
             setCargando(false)
         }
@@ -196,11 +200,12 @@ const ProyectosProvider = ({children}) => {
         if (tarea?.id){
             await editarTarea(tarea)
         } else {
-            await crearTarea()
+            await crearTarea(tarea)
         }
     }
 
     const crearTarea = async tarea => {
+
         try {
             const token = localStorage.getItem('token')
             if (!token) return

@@ -25,7 +25,6 @@ const Proyecto = () => {
     const {msg} = alerta
 
   return (
-    msg && alerta.error ? <Alerta alerta={alerta} /> : (
         <>
             {cargando ? 
             (
@@ -62,9 +61,6 @@ const Proyecto = () => {
                 )}
                     <p className="font-bold text-xl mt-10">Tareas del Proyecto</p>
                     <div className="flex justify-center">
-                        <div className="w-full md:w-1/3 lg:w-1/4">
-                            {msg && <Alerta alerta={alerta} />}
-                        </div>
                     </div>
                     <div className="bg-white shadow rounded-lg my-3">
                         {proyecto.tareas?.length ? 
@@ -106,7 +102,6 @@ const Proyecto = () => {
             )}
         </>
     )
-  )
 }
 
 export default Proyecto
