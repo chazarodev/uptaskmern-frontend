@@ -4,6 +4,8 @@ import Alerta from "../components/Alerta"
 import Tarea from "../components/Tarea"
 import ModalFormularioTarea from "../components/ModalFormularioTarea"
 import ModalEliminarTarea from "../components/ModalEliminarTarea"
+import ModalEliminarColaborador from "../components/ModalEliminarColaborador"
+import Colaborador from "../components/Colaborador"
 import useProyectos from "../hooks/useProyectos"
 
 const Proyecto = () => {
@@ -56,7 +58,7 @@ const Proyecto = () => {
                         {msg && <Alerta alerta={alerta} />}
                     </div>
                 </div>
-                <div className="bg-white shadow rounded-lg">
+                <div className="bg-white shadow rounded-lg my-3">
                     {proyecto.tareas?.length ? 
                         proyecto.tareas?.map(tarea => (
                             <Tarea 
@@ -66,7 +68,7 @@ const Proyecto = () => {
                         )) : 
                         (<p className="text-center my-5 p-10">No hay tareas en este proyecto</p>)}
                 </div>
-                <div className="flex items-center justify-between mt-10">
+                <div className="flex items-center justify-between my-3">
                     <p className="font-bold text-xl">Colaboradores</p>
                     <Link
                         to={`/proyectos/nuevo-colaborador/${proyecto._id}`}
@@ -75,8 +77,19 @@ const Proyecto = () => {
                         Añadir
                     </Link>
                 </div>
+                <div className="bg-white shadow rounded-lg">
+                    {proyecto.colaboradores?.length ? 
+                        proyecto.colaboradores?.map(colaborador => (
+                            <Colaborador 
+                                key={colaborador._id}
+                                colaborador={colaborador}
+                            />
+                        )) : 
+                        (<p className="text-center my-5 p-10">No hay colaboradores</p>)}
+                </div>
                 <ModalFormularioTarea />
                 <ModalEliminarTarea />
+                <ModalEliminarColaborador />
             </>
         )}
     </>
